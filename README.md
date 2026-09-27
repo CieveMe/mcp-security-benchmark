@@ -102,9 +102,12 @@ The findings are stored in a public repository, so raw target output is never st
   `{env:NAME:default}` placeholders instead of absolute paths.
 
 While developing this harness, an early run committed a real environment dump (paths and variable
-names from the machine that produced it). It was caught before publication, the collection layer was
-fixed, and the repository history was rewritten during preparation rather than shipping the dump in
-an earlier commit. That is why the history is short.
+names from the machine that produced it). The collection layer was fixed, and on 2026-09-28 the
+published history was replaced by this redacted history, so the dump is not part of the repository
+any more; those commits no longer exist on `main`. That is why the history is short — and it is the
+sharpest illustration of the class of mistake this benchmark is about: a probe that reports
+credential exposure will faithfully republish the secret unless the collection layer redacts it
+before storing it.
 
 ## Method in one line
 
