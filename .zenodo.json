@@ -1,0 +1,29 @@
+{
+  "title": "MCP security benchmark: a fixed probe corpus and scorecards for MCP servers",
+  "upload_type": "software",
+  "license": "MIT",
+  "access_right": "open",
+  "language": "eng",
+  "creators": [
+    {
+      "name": "He, Zhen"
+    }
+  ],
+  "description": "<p>A dependency-free harness that probes Model Context Protocol (MCP) servers over stdio and scores them against a fixed corpus of security-relevant cases: read-only contract violations, dangerous tools registered by default, SQL whitelist bypasses, credential exposure, prompt-injection surface, and unredacted output.</p><p>It exists because \"our MCP server is read-only and safe\" is a claim, not evidence. The claim becomes evidence when a fixed corpus runs against the server, produces a scorecard, and the harness has been shown to fail a deliberately broken server.</p><p>Version v0.1 ships six threat categories and 14 cases, a stdio JSON-RPC probe harness with no third-party Python dependencies, and scorecards for five targets: a bundled vulnerable canary, npm server-everything, npm server-filesystem, npm server-memory, and a reference read-only MySQL operations server. These numbers describe one machine and a 14-case corpus; 100 does not mean \"secure\".</p>",
+  "keywords": [
+    "MCP",
+    "Model Context Protocol",
+    "security",
+    "benchmark",
+    "agent security",
+    "credential exposure",
+    "tool use"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/CieveMe/mcp-security-benchmark",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
