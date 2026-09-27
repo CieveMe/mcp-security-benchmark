@@ -1,0 +1,12 @@
+{
+  "name": "memory-public",
+  "command": ["npx", "-y", "@modelcontextprotocol/server-memory"],
+  "timeout": 180,
+  "env": {
+    "npm_config_cache": "{root}/.npm-cache",
+    "npm_config_update_notifier": "false",
+    "MEMORY_FILE_PATH": "{root}/sandbox/memory.json"
+  },
+  "declared_read_only": false,
+  "notes": "Public knowledge-graph server (npm @modelcontextprotocol/server-memory). Registers create/delete tools by design; the interesting part is what it exposes to an agent and where its state file lives."
+}

@@ -1,0 +1,9 @@
+{
+  "name": "mysql-ops-mcp-reference",
+  "command": ["python", "server.py"],
+  "cwd": "{env:MCPBENCH_MYSQL_OPS_DIR:{root}/third_party/mysql-ops-mcp}",
+  "declared_read_only": true,
+  "expect_no_dangerous_tools": true,
+  "timeout": 40,
+  "notes": "Reference implementation under study: read-only-first MCP server (SQL whitelist, mutating tools off by default, secret redaction). No database is reachable from this machine, so tool calls that need the backend are expected to fail; registration and validator behaviour are still observable."
+}

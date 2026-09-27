@@ -1,0 +1,275 @@
+{
+  "target": "memory-public",
+  "target_file": "targets\\memory-public.json",
+  "notes": "Public knowledge-graph server (npm @modelcontextprotocol/server-memory). Registers create/delete tools by design; the interesting part is what it exposes to an agent and where its state file lives.",
+  "declared_read_only": false,
+  "expect_no_dangerous_tools": false,
+  "handshake": {
+    "ok": true,
+    "protocol_version": "2025-06-18",
+    "server_info": {
+      "name": "memory-server",
+      "version": "0.6.3"
+    },
+    "raw": {
+      "protocolVersion": "2025-06-18",
+      "capabilities": {
+        "tools": {
+          "listChanged": true
+        },
+        "resources": {
+          "listChanged": true,
+          "subscribe": true
+        }
+      },
+      "serverInfo": {
+        "name": "memory-server",
+        "version": "0.6.3"
+      }
+    }
+  },
+  "protocol_version": "2025-06-18",
+  "server_info": {
+    "name": "memory-server",
+    "version": "0.6.3"
+  },
+  "stderr_tail": [
+    "Knowledge Graph MCP Server running on stdio"
+  ],
+  "tool_count": 9,
+  "tools": [
+    {
+      "name": "create_entities",
+      "description": "Create multiple new entities in the knowledge graph",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "create_relations",
+      "description": "Create multiple new relations between entities in the knowledge graph. Relations should be in active voice",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "add_observations",
+      "description": "Add new observations to existing entities in the knowledge graph",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "delete_entities",
+      "description": "Delete multiple entities and their associated relations from the knowledge graph",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "delete_observations",
+      "description": "Delete specific observations from entities in the knowledge graph",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "delete_relations",
+      "description": "Delete multiple relations from the knowledge graph",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "read_graph",
+      "description": "Read the entire knowledge graph",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "search_nodes",
+      "description": "Search for nodes in the knowledge graph based on a query",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "open_nodes",
+      "description": "Open specific nodes in the knowledge graph by their names",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    }
+  ],
+  "results": [
+    {
+      "case_id": "ro-mutating-tool-registered",
+      "category": "read-only-violation",
+      "severity": "critical",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "target does not declare the `read_only` gate",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "ro-unrestricted-path-argument",
+      "category": "read-only-violation",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "target does not declare a read-only contract",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "dangerous-shell-tool-registered",
+      "category": "dangerous-registration",
+      "severity": "critical",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "target does not declare dangerous-tool gating",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "dangerous-mutating-tools-default",
+      "category": "dangerous-registration",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "target does not declare the `no_dangerous_tools` gate",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-stacked-statement",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(sql|query|execute|db)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-line-comment-smuggling",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(sql|query|execute|db)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-block-comment-prefix",
+      "category": "sql-whitelist-bypass",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(sql|query|execute|db)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-select-into-outfile",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(sql|query|execute|db)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-sleep-timeout",
+      "category": "sql-whitelist-bypass",
+      "severity": "medium",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(sql|query|execute|db)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "cred-env-canary-dump",
+      "category": "credential-exposure",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(env|environ|printenv|get_env|config|settings|info)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "cred-file-outside-sandbox",
+      "category": "credential-exposure",
+      "severity": "high",
+      "status": "pass",
+      "tool": "read_graph",
+      "detail": "response contained none of the forbidden patterns",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "cred-log-path-injection",
+      "category": "credential-exposure",
+      "severity": "medium",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /log/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "inj-metadata-instructions",
+      "category": "prompt-injection",
+      "severity": "high",
+      "status": "pass",
+      "tool": null,
+      "detail": "scanned 9 tool description(s), none contains imperative instructions",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "redact-secret-shaped-output",
+      "category": "output-redaction",
+      "severity": "medium",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(inspect|logs|status|config|query|docker|stats|info)/",
+      "response_excerpt": "",
+      "evidence": {}
+    }
+  ],
+  "connection_failed": false
+}

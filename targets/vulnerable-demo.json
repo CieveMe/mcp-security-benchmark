@@ -1,0 +1,8 @@
+{
+  "name": "vulnerable-demo",
+  "command": ["python", "servers/vulnerable_demo_server.py"],
+  "declared_read_only": true,
+  "expect_no_dangerous_tools": true,
+  "timeout": 20,
+  "notes": "Bundled canary target: deliberately fails every category. If it scores well, the harness is broken."
+}

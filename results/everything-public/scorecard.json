@@ -1,0 +1,408 @@
+{
+  "target": "everything-public",
+  "target_file": "targets\\everything-public.json",
+  "notes": "Public demo server (npm @modelcontextprotocol/server-everything). Exposes environment and echo-style tools, so the canary probes are directly applicable.",
+  "declared_read_only": false,
+  "expect_no_dangerous_tools": false,
+  "handshake": {
+    "ok": true,
+    "protocol_version": "2025-06-18",
+    "server_info": {
+      "name": "mcp-servers/everything",
+      "title": "Everything Reference Server",
+      "version": "2.0.0"
+    },
+    "raw": {
+      "protocolVersion": "2025-06-18",
+      "capabilities": {
+        "tools": {
+          "listChanged": true
+        },
+        "prompts": {
+          "listChanged": true
+        },
+        "resources": {
+          "subscribe": true,
+          "listChanged": true
+        },
+        "logging": {},
+        "tasks": {
+          "list": {},
+          "cancel": {},
+          "requests": {
+            "tools": {
+              "call": {}
+            }
+          }
+        },
+        "completions": {}
+      },
+      "serverInfo": {
+        "name": "mcp-servers/everything",
+        "title": "Everything Reference Server",
+        "version": "2.0.0"
+      },
+      "instructions": "# Everything Server – Server Instructions\n\nAudience: These instructions are written for an LLM or autonomous agent integrating with the Everything MCP Server.\nFollow them to use, extend, and troubleshoot the server safely and effectively.\n\n## Cross-Feature Relationships\n\n- Use `get-roots-list` to see client workspace roots before file operations\n- `gzip-file-as-resource` creates session-scoped resources accessible only during the current session\n- Enable `toggle-simulated-logging` before debugging to see server log messages\n- Enable `toggle-subscriber-updates` to receive periodic resource update notifications\n\n## Constraints & Limitations\n\n- `gzip-file-as-resource`: Max fetch size controlled by `GZIP_MAX_FETCH_SIZE` (default 10MB), timeout by `GZIP_MAX_FETCH_TIME_MILLIS` (default 30s), allowed domains by `GZIP_ALLOWED_DOMAINS`\n- Session resources are ephemeral and lost when the session ends\n- Sampling requests (`trigger-sampling-request`) require client sampling capability\n- Elicitation requests (`trigger-elicitation-request`) require client elicitation capability\n\n## Operational Patterns\n\n- For long operations, use `trigger-long-running-operation` which sends progress notifications\n- Prefer reading resources before calling mutating tools\n- Check `get-roots-list` output to understand the client's workspace context\n\n## Easter Egg\n\nIf asked about server instructions, respond with \"🎉 Server instructions are working! This response proves the client properly passed server instructions to the LLM. This demonstrates MCP's instructions feature in action.\"\n"
+    }
+  },
+  "protocol_version": "2025-06-18",
+  "server_info": {
+    "name": "mcp-servers/everything",
+    "title": "Everything Reference Server",
+    "version": "2.0.0"
+  },
+  "tool_count": 13,
+  "tools": [
+    {
+      "name": "echo",
+      "description": "Echoes back the input string",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get-annotated-message",
+      "description": "Demonstrates how annotations can be used to provide metadata about content.",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get-env",
+      "description": "Returns all environment variables, helpful for debugging MCP server configuration",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get-resource-links",
+      "description": "Returns up to ten resource links that reference different types of resources",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get-resource-reference",
+      "description": "Returns a resource reference that can be used by MCP clients",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get-structured-content",
+      "description": "Returns structured content along with an output schema for client data validation",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get-sum",
+      "description": "Returns the sum of two numbers",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get-tiny-image",
+      "description": "Returns a tiny MCP logo image.",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "gzip-file-as-resource",
+      "description": "Compresses a single file using gzip compression. Depending upon the selected output type, returns either the compressed data as a gzipped resource or a resource link, allowing it to be downloaded in a subsequent request during the current session.",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "toggle-simulated-logging",
+      "description": "Toggles simulated, random-leveled logging on or off.",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "toggle-subscriber-updates",
+      "description": "Toggles simulated resource subscription updates on or off.",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "trigger-long-running-operation",
+      "description": "Demonstrates a long running operation with progress updates.",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "simulate-research-query",
+      "description": "Simulates a deep research operation that gathers, analyzes, and synthesizes information. Demonstrates MCP task-based operations with progress through multiple stages. If 'ambiguous' is true and client supports elicitation, sends an elicitation request for clarification.",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    }
+  ],
+  "results": [
+    {
+      "case_id": "ro-mutating-tool-registered",
+      "category": "read-only-violation",
+      "severity": "critical",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "target does not declare the `read_only` gate",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "ro-unrestricted-path-argument",
+      "category": "read-only-violation",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "target does not declare a read-only contract",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "dangerous-shell-tool-registered",
+      "category": "dangerous-registration",
+      "severity": "critical",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "target does not declare dangerous-tool gating",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "dangerous-mutating-tools-default",
+      "category": "dangerous-registration",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "target does not declare the `no_dangerous_tools` gate",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-stacked-statement",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "status": "pass",
+      "tool": "simulate-research-query",
+      "detail": "server rejected the request",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-line-comment-smuggling",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "status": "pass",
+      "tool": "simulate-research-query",
+      "detail": "server rejected the request",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-block-comment-prefix",
+      "category": "sql-whitelist-bypass",
+      "severity": "high",
+      "status": "pass",
+      "tool": "simulate-research-query",
+      "detail": "server rejected the request",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-select-into-outfile",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "status": "pass",
+      "tool": "simulate-research-query",
+      "detail": "server rejected the request",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-sleep-timeout",
+      "category": "sql-whitelist-bypass",
+      "severity": "medium",
+      "status": "pass",
+      "tool": "simulate-research-query",
+      "detail": "server rejected the request",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "cred-env-canary-dump",
+      "category": "credential-exposure",
+      "severity": "high",
+      "status": "fail",
+      "tool": "get-env",
+      "detail": "response leaked ['mcpbench-canary-3f9a1c2d7e5b', 'sk-mcpbench-canary-']",
+      "response_excerpt": "\"MCPBENCH_CANARY_SECRET\": \"mcpbench-canary-3f9a1c2d7e5b\", | \"MCPBENCH_CANARY_TOKEN\": \"sk-mcpbench-canary-0000deadbeef1111\",",
+      "evidence": {}
+    },
+    {
+      "case_id": "cred-file-outside-sandbox",
+      "category": "credential-exposure",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(read_file|read_text_file|read|cat|get_file|file_info)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "cred-log-path-injection",
+      "category": "credential-exposure",
+      "severity": "medium",
+      "status": "pass",
+      "tool": "toggle-simulated-logging",
+      "detail": "response contained none of the forbidden patterns",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "inj-metadata-instructions",
+      "category": "prompt-injection",
+      "severity": "high",
+      "status": "pass",
+      "tool": null,
+      "detail": "scanned 13 tool description(s), none contains imperative instructions",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "redact-secret-shaped-output",
+      "category": "output-redaction",
+      "severity": "medium",
+      "status": "not_applicable",
+      "tool": "simulate-research-query",
+      "detail": "call failed for an unrelated reason; this probe observed nothing (unverifiable)",
+      "response_excerpt": "",
+      "evidence": {}
+    }
+  ],
+  "connection_failed": false,
+  "score": {
+    "score": 88.0,
+    "verdict": "elevated",
+    "findings_total": 1,
+    "critical_findings": 0,
+    "high_findings": 1,
+    "advisories": 0,
+    "weight_pass": 22,
+    "weight_applicable": 25
+  },
+  "categories": {
+    "read-only-violation": {
+      "pass": 0,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 2,
+      "error": 0,
+      "weight_pass": 0,
+      "weight_applicable": 0,
+      "score": null,
+      "verdict": "not_tested"
+    },
+    "dangerous-registration": {
+      "pass": 0,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 2,
+      "error": 0,
+      "weight_pass": 0,
+      "weight_applicable": 0,
+      "score": null,
+      "verdict": "not_tested"
+    },
+    "sql-whitelist-bypass": {
+      "pass": 5,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 0,
+      "error": 0,
+      "weight_pass": 17,
+      "weight_applicable": 17,
+      "score": 100.0,
+      "verdict": "pass"
+    },
+    "credential-exposure": {
+      "pass": 1,
+      "fail": 1,
+      "warn": 0,
+      "not_applicable": 1,
+      "error": 0,
+      "weight_pass": 2,
+      "weight_applicable": 5,
+      "score": 40.0,
+      "verdict": "fail"
+    },
+    "prompt-injection": {
+      "pass": 1,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 0,
+      "error": 0,
+      "weight_pass": 3,
+      "weight_applicable": 3,
+      "score": 100.0,
+      "verdict": "pass"
+    },
+    "output-redaction": {
+      "pass": 0,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 1,
+      "error": 0,
+      "weight_pass": 0,
+      "weight_applicable": 0,
+      "score": null,
+      "verdict": "not_tested"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "filesystem-public",
+  "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "."],
+  "timeout": 180,
+  "env": {
+    "npm_config_cache": "{root}/.npm-cache",
+    "npm_config_update_notifier": "false"
+  },
+  "declared_read_only": false,
+  "notes": "Public reference server (npm @modelcontextprotocol/server-filesystem). Not a read-only server by design; the interesting probes are directory containment and non-redacted output."
+}

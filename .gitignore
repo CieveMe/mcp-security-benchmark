@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local npm cache used by the npx targets (kept inside the repo to stay sandbox-friendly)
+.npm-cache/
+
+# Scratch space handed to file-oriented targets
+sandbox/*
+!sandbox/.gitkeep
+
+# Local iteration logs
+*.log

@@ -1,0 +1,376 @@
+{
+  "target": "filesystem-public",
+  "target_file": "targets\\filesystem-public.json",
+  "notes": "Public reference server (npm @modelcontextprotocol/server-filesystem). Not a read-only server by design; the interesting probes are directory containment and non-redacted output.",
+  "declared_read_only": false,
+  "expect_no_dangerous_tools": false,
+  "handshake": {
+    "ok": true,
+    "protocol_version": "2025-06-18",
+    "server_info": {
+      "name": "secure-filesystem-server",
+      "version": "0.2.0"
+    },
+    "raw": {
+      "protocolVersion": "2025-06-18",
+      "capabilities": {
+        "tools": {
+          "listChanged": true
+        }
+      },
+      "serverInfo": {
+        "name": "secure-filesystem-server",
+        "version": "0.2.0"
+      }
+    }
+  },
+  "protocol_version": "2025-06-18",
+  "server_info": {
+    "name": "secure-filesystem-server",
+    "version": "0.2.0"
+  },
+  "tool_count": 14,
+  "tools": [
+    {
+      "name": "read_file",
+      "description": "Read the complete contents of a file as text. DEPRECATED: Use read_text_file instead.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "read_text_file",
+      "description": "Read the complete contents of a file from the file system as text. Handles various text encodings and provides detailed error messages if the file cannot be read. Use this tool when you need to examine the contents of a single file. Use the 'head' parameter to read only the first N lines of a file, or the 'tail' parameter to read only the last N lines of a file. Operates on the file as text regard",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "read_media_file",
+      "description": "Read a file and return it as a base64-encoded content block with its MIME type. Image and audio files are returned as image/audio content; any other file type is returned as an embedded resource. Only works within allowed directories.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "read_multiple_files",
+      "description": "Read the contents of multiple files simultaneously. This is more efficient than reading files one by one when you need to analyze or compare multiple files. Each file's content is returned with its path as a reference. Failed reads for individual files won't stop the entire operation. Only works within allowed directories.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "write_file",
+      "description": "Create a new file or completely overwrite an existing file with new content. Use with caution as it will overwrite existing files without warning. Handles text content with proper encoding. Only works within allowed directories.",
+      "annotations": {
+        "readOnlyHint": false,
+        "idempotentHint": true,
+        "destructiveHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "edit_file",
+      "description": "Make line-based edits to a text file. Each edit replaces exact line sequences with new content. Returns a git-style diff showing the changes made. Only works within allowed directories.",
+      "annotations": {
+        "readOnlyHint": false,
+        "idempotentHint": false,
+        "destructiveHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "create_directory",
+      "description": "Create a new directory or ensure a directory exists. Can create multiple nested directories in one operation. If the directory already exists, this operation will succeed silently. Perfect for setting up directory structures for projects or ensuring required paths exist. Only works within allowed directories.",
+      "annotations": {
+        "readOnlyHint": false,
+        "idempotentHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "list_directory",
+      "description": "Get a detailed listing of all files and directories in a specified path. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is essential for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "list_directory_with_sizes",
+      "description": "Get a detailed listing of all files and directories in a specified path, including sizes. Results clearly distinguish between files and directories with [FILE] and [DIR] prefixes. This tool is useful for understanding directory structure and finding specific files within a directory. Only works within allowed directories.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "directory_tree",
+      "description": "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "move_file",
+      "description": "Move or rename files and directories. Can move files between directories and rename them in a single operation. If the destination exists, the operation will fail. Works across different directories and can be used for simple renaming within the same directory. Both source and destination must be within allowed directories.",
+      "annotations": {
+        "readOnlyHint": false,
+        "idempotentHint": false,
+        "destructiveHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "search_files",
+      "description": "Recursively search for files and directories matching a pattern. The patterns should be glob-style patterns that match paths relative to the working directory. Use pattern like '*.ext' to match files in current directory, and '**/*.ext' to match files in all subdirectories. Returns full paths to all matching items. Great for finding files when you don't know their exact location. Only searches wit",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_file_info",
+      "description": "Retrieve detailed metadata about a file or directory. Returns comprehensive information including size, creation time, last modified time, permissions, and type. This tool is perfect for understanding file characteristics without reading the actual content. Only works within allowed directories.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "list_allowed_directories",
+      "description": "Returns the list of directories that this server is allowed to access. Subdirectories within these allowed directories are also accessible. Use this to understand which directories and their nested paths are available before trying to access files.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    }
+  ],
+  "results": [
+    {
+      "case_id": "ro-mutating-tool-registered",
+      "category": "read-only-violation",
+      "severity": "critical",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "target does not declare the `read_only` gate",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "ro-unrestricted-path-argument",
+      "category": "read-only-violation",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "target does not declare a read-only contract",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "dangerous-shell-tool-registered",
+      "category": "dangerous-registration",
+      "severity": "critical",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "target does not declare dangerous-tool gating",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "dangerous-mutating-tools-default",
+      "category": "dangerous-registration",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "target does not declare the `no_dangerous_tools` gate",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-stacked-statement",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(sql|query|execute|db)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-line-comment-smuggling",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(sql|query|execute|db)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-block-comment-prefix",
+      "category": "sql-whitelist-bypass",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(sql|query|execute|db)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-select-into-outfile",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(sql|query|execute|db)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-sleep-timeout",
+      "category": "sql-whitelist-bypass",
+      "severity": "medium",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(sql|query|execute|db)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "cred-env-canary-dump",
+      "category": "credential-exposure",
+      "severity": "high",
+      "status": "pass",
+      "tool": "get_file_info",
+      "detail": "server refused the request, so nothing could leak",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "cred-file-outside-sandbox",
+      "category": "credential-exposure",
+      "severity": "high",
+      "status": "pass",
+      "tool": "read_file",
+      "detail": "server refused the request, so nothing could leak",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "cred-log-path-injection",
+      "category": "credential-exposure",
+      "severity": "medium",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /log/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "inj-metadata-instructions",
+      "category": "prompt-injection",
+      "severity": "high",
+      "status": "pass",
+      "tool": null,
+      "detail": "scanned 14 tool description(s), none contains imperative instructions",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "redact-secret-shaped-output",
+      "category": "output-redaction",
+      "severity": "medium",
+      "status": "pass",
+      "tool": "get_file_info",
+      "detail": "server refused the request, so nothing could leak",
+      "response_excerpt": "",
+      "evidence": {}
+    }
+  ],
+  "connection_failed": false,
+  "score": {
+    "score": 100.0,
+    "verdict": "no_findings",
+    "findings_total": 0,
+    "critical_findings": 0,
+    "high_findings": 0,
+    "advisories": 0,
+    "weight_pass": 11,
+    "weight_applicable": 11
+  },
+  "categories": {
+    "read-only-violation": {
+      "pass": 0,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 2,
+      "error": 0,
+      "weight_pass": 0,
+      "weight_applicable": 0,
+      "score": null,
+      "verdict": "not_tested"
+    },
+    "dangerous-registration": {
+      "pass": 0,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 2,
+      "error": 0,
+      "weight_pass": 0,
+      "weight_applicable": 0,
+      "score": null,
+      "verdict": "not_tested"
+    },
+    "sql-whitelist-bypass": {
+      "pass": 0,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 5,
+      "error": 0,
+      "weight_pass": 0,
+      "weight_applicable": 0,
+      "score": null,
+      "verdict": "not_tested"
+    },
+    "credential-exposure": {
+      "pass": 2,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 1,
+      "error": 0,
+      "weight_pass": 6,
+      "weight_applicable": 6,
+      "score": 100.0,
+      "verdict": "pass"
+    },
+    "prompt-injection": {
+      "pass": 1,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 0,
+      "error": 0,
+      "weight_pass": 3,
+      "weight_applicable": 3,
+      "score": 100.0,
+      "verdict": "pass"
+    },
+    "output-redaction": {
+      "pass": 1,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 0,
+      "error": 0,
+      "weight_pass": 2,
+      "weight_applicable": 2,
+      "score": 100.0,
+      "verdict": "pass"
+    }
+  }
+}

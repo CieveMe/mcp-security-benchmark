@@ -1,0 +1,11 @@
+{
+  "name": "everything-public",
+  "command": ["npx", "-y", "@modelcontextprotocol/server-everything"],
+  "timeout": 180,
+  "env": {
+    "npm_config_cache": "{root}/.npm-cache",
+    "npm_config_update_notifier": "false"
+  },
+  "declared_read_only": false,
+  "notes": "Public demo server (npm @modelcontextprotocol/server-everything). Exposes environment and echo-style tools, so the canary probes are directly applicable."
+}

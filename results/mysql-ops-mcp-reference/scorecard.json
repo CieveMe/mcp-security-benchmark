@@ -1,0 +1,357 @@
+{
+  "target": "mysql-ops-mcp-reference",
+  "target_file": "targets\\mysql-ops-mcp-reference.json",
+  "notes": "Reference implementation under study: read-only-first MCP server (SQL whitelist, mutating tools off by default, secret redaction). No database is reachable from this machine, so tool calls that need the backend are expected to fail; registration and validator behaviour are still observable.",
+  "declared_read_only": true,
+  "expect_no_dangerous_tools": true,
+  "handshake": {
+    "ok": true,
+    "protocol_version": "2025-06-18",
+    "server_info": {
+      "name": "mysql-ops-mcp",
+      "version": "1.27.0"
+    },
+    "raw": {
+      "protocolVersion": "2025-06-18",
+      "capabilities": {
+        "experimental": {},
+        "prompts": {
+          "listChanged": false
+        },
+        "resources": {
+          "subscribe": false,
+          "listChanged": false
+        },
+        "tools": {
+          "listChanged": false
+        }
+      },
+      "serverInfo": {
+        "name": "mysql-ops-mcp",
+        "version": "1.27.0"
+      }
+    }
+  },
+  "protocol_version": "2025-06-18",
+  "server_info": {
+    "name": "mysql-ops-mcp",
+    "version": "1.27.0"
+  },
+  "tool_count": 17,
+  "tools": [
+    {
+      "name": "list_activities",
+      "description": "查询所有抽奖活动列表，含状态、时间、费用、参与人数概览。\n    status: 0=草稿 1=进行中 2=已结束",
+      "annotations": {}
+    },
+    {
+      "name": "activity_stats",
+      "description": "查询指定活动的详细统计：参与人数、中奖/未中奖、各奖品消耗情况、收入",
+      "annotations": {}
+    },
+    {
+      "name": "today_records",
+      "description": "查询今天的抽奖数据：摘要 + 最近 15 条记录",
+      "annotations": {}
+    },
+    {
+      "name": "prize_stock",
+      "description": "查询指定活动所有奖品的库存。remain_count=-1 表示无限库存",
+      "annotations": {}
+    },
+    {
+      "name": "revenue_by_day",
+      "description": "按天统计活动收入（最近N天）",
+      "annotations": {}
+    },
+    {
+      "name": "winner_list",
+      "description": "查询中奖记录。receive_status: 0=待领 10=待发货 20=已发货 30=已完成",
+      "annotations": {}
+    },
+    {
+      "name": "points_overview",
+      "description": "查询积分系统概览",
+      "annotations": {}
+    },
+    {
+      "name": "custom_query",
+      "description": "Run one read-only SQL statement (SELECT / WITH / SHOW / DESCRIBE / EXPLAIN).\n\n    SQL comments are stripped before validation, multiple statements are\n    rejected and the result set is capped at MCP_MAX_ROWS rows.\n    ",
+      "annotations": {}
+    },
+    {
+      "name": "server_status",
+      "description": "查询服务器整体状态：运行时间、CPU、内存、磁盘",
+      "annotations": {}
+    },
+    {
+      "name": "server_network",
+      "description": "查询服务器网络状态：IP、端口监听、连接数",
+      "annotations": {}
+    },
+    {
+      "name": "server_processes",
+      "description": "查看服务器进程，可选关键词过滤（java / mysql / nginx ...）",
+      "annotations": {}
+    },
+    {
+      "name": "server_logs",
+      "description": "查看服务器系统日志最后 N 行（N 上限 500）",
+      "annotations": {}
+    },
+    {
+      "name": "docker_ps",
+      "description": "查看所有 Docker 容器状态（运行中+已停止）",
+      "annotations": {}
+    },
+    {
+      "name": "docker_stats",
+      "description": "查看 Docker 容器资源占用（CPU/内存/网络IO）",
+      "annotations": {}
+    },
+    {
+      "name": "docker_logs",
+      "description": "查看 Docker 容器日志（容器名必须在 MCP_CONTAINERS 白名单内）",
+      "annotations": {}
+    },
+    {
+      "name": "docker_inspect",
+      "description": "查看容器详情（环境变量里的密钥/token 会被打码）",
+      "annotations": {}
+    },
+    {
+      "name": "deploy_check",
+      "description": "部署前检查：磁盘、容器状态、产物时间（路径来自 MCP_* 环境变量）",
+      "annotations": {}
+    }
+  ],
+  "results": [
+    {
+      "case_id": "ro-mutating-tool-registered",
+      "category": "read-only-violation",
+      "severity": "critical",
+      "status": "warn",
+      "tool": "deploy_check",
+      "detail": "1 tool name(s) mention a mutating verb but carry a read-only suffix; needs human confirmation",
+      "response_excerpt": "",
+      "evidence": {
+        "tools": [
+          "deploy_check"
+        ]
+      }
+    },
+    {
+      "case_id": "ro-unrestricted-path-argument",
+      "category": "read-only-violation",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /^(read|load|fetch|cat|open)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "dangerous-shell-tool-registered",
+      "category": "dangerous-registration",
+      "severity": "critical",
+      "status": "pass",
+      "tool": null,
+      "detail": "tool is not registered",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "dangerous-mutating-tools-default",
+      "category": "dangerous-registration",
+      "severity": "high",
+      "status": "warn",
+      "tool": "deploy_check",
+      "detail": "1 tool name(s) mention a mutating verb but carry a read-only suffix; needs human confirmation",
+      "response_excerpt": "",
+      "evidence": {
+        "tools": [
+          "deploy_check"
+        ]
+      }
+    },
+    {
+      "case_id": "sql-stacked-statement",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "status": "pass",
+      "tool": "custom_query",
+      "detail": "server refused in the response body (isError was not set)",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-line-comment-smuggling",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "status": "pass",
+      "tool": "custom_query",
+      "detail": "server refused in the response body (isError was not set)",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-block-comment-prefix",
+      "category": "sql-whitelist-bypass",
+      "severity": "high",
+      "status": "pass",
+      "tool": "custom_query",
+      "detail": "server refused in the response body (isError was not set)",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-select-into-outfile",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "status": "pass",
+      "tool": "custom_query",
+      "detail": "server refused in the response body (isError was not set)",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "sql-sleep-timeout",
+      "category": "sql-whitelist-bypass",
+      "severity": "medium",
+      "status": "pass",
+      "tool": "custom_query",
+      "detail": "server refused in the response body (isError was not set)",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "cred-env-canary-dump",
+      "category": "credential-exposure",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(env|environ|printenv|get_env|config|settings|info)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "cred-file-outside-sandbox",
+      "category": "credential-exposure",
+      "severity": "high",
+      "status": "not_applicable",
+      "tool": null,
+      "detail": "no tool matches /(read_file|read_text_file|read|cat|get_file|file_info)/",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "cred-log-path-injection",
+      "category": "credential-exposure",
+      "severity": "medium",
+      "status": "pass",
+      "tool": "server_logs",
+      "detail": "response contained none of the forbidden patterns",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "inj-metadata-instructions",
+      "category": "prompt-injection",
+      "severity": "high",
+      "status": "pass",
+      "tool": null,
+      "detail": "scanned 17 tool description(s), none contains imperative instructions",
+      "response_excerpt": "",
+      "evidence": {}
+    },
+    {
+      "case_id": "redact-secret-shaped-output",
+      "category": "output-redaction",
+      "severity": "medium",
+      "status": "pass",
+      "tool": "activity_stats",
+      "detail": "server refused the request, so nothing could leak",
+      "response_excerpt": "",
+      "evidence": {}
+    }
+  ],
+  "connection_failed": false,
+  "score": {
+    "score": 100.0,
+    "verdict": "no_findings",
+    "findings_total": 0,
+    "critical_findings": 0,
+    "high_findings": 0,
+    "advisories": 2,
+    "weight_pass": 28,
+    "weight_applicable": 28
+  },
+  "categories": {
+    "read-only-violation": {
+      "pass": 0,
+      "fail": 0,
+      "warn": 1,
+      "not_applicable": 1,
+      "error": 0,
+      "weight_pass": 0,
+      "weight_applicable": 0,
+      "score": null,
+      "verdict": "not_tested"
+    },
+    "dangerous-registration": {
+      "pass": 1,
+      "fail": 0,
+      "warn": 1,
+      "not_applicable": 0,
+      "error": 0,
+      "weight_pass": 4,
+      "weight_applicable": 4,
+      "score": 100.0,
+      "verdict": "pass"
+    },
+    "sql-whitelist-bypass": {
+      "pass": 5,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 0,
+      "error": 0,
+      "weight_pass": 17,
+      "weight_applicable": 17,
+      "score": 100.0,
+      "verdict": "pass"
+    },
+    "credential-exposure": {
+      "pass": 1,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 2,
+      "error": 0,
+      "weight_pass": 2,
+      "weight_applicable": 2,
+      "score": 100.0,
+      "verdict": "pass"
+    },
+    "prompt-injection": {
+      "pass": 1,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 0,
+      "error": 0,
+      "weight_pass": 3,
+      "weight_applicable": 3,
+      "score": 100.0,
+      "verdict": "pass"
+    },
+    "output-redaction": {
+      "pass": 1,
+      "fail": 0,
+      "warn": 0,
+      "not_applicable": 0,
+      "error": 0,
+      "weight_pass": 2,
+      "weight_applicable": 2,
+      "score": 100.0,
+      "verdict": "pass"
+    }
+  }
+}

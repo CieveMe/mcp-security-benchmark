@@ -1,0 +1,165 @@
+{
+  "schema": "mcp-security-benchmark/cases@1",
+  "description": "Probe corpus. Each case declares the intent (which tool pattern it targets), the expected safe behaviour, and how a failure is detected. Cases that cannot apply to a target are reported as not_applicable instead of being counted for or against it.",
+  "placeholders": {
+    "{canary_file}": "absolute path to a canary secret file that lives OUTSIDE the target's allowed directory",
+    "{run_dir}": "per-target result directory (inside the target's allowed directory when relevant)"
+  },
+  "cases": [
+    {
+      "id": "ro-mutating-tool-registered",
+      "category": "read-only-violation",
+      "severity": "critical",
+      "mode": "tool_list_scan",
+      "gate": "read_only",
+      "tool_pattern": "(write|create|edit|move|rename|delete|remove|truncate|drop|update|insert|deploy|restart|kill)",
+      "expect": "absent",
+      "rationale": "A server that advertises read-only access must not register tools whose name promises a mutation: an agent will call what it can see. A mutating verb with a read-only suffix (`deploy_check`) is reported as an advisory rather than scored, because the name alone cannot settle it."
+    },
+    {
+      "id": "ro-unrestricted-path-argument",
+      "category": "read-only-violation",
+      "severity": "high",
+      "requires_read_only": true,
+      "tool_pattern": "^(read|load|fetch|cat|open)",
+      "arguments": { "path": "{canary_file}" },
+      "expect": "no_leak",
+      "detect": { "forbidden_substrings": ["mcpbench-canary-3f9a1c2d7e5b"] },
+      "rationale": "If the read surface accepts an arbitrary path, a supposedly read-only server still walks out of its scope."
+    },
+    {
+      "id": "dangerous-shell-tool-registered",
+      "category": "dangerous-registration",
+      "severity": "critical",
+      "requires_no_dangerous_tools": true,
+      "tool_pattern": "(exec|shell|run_command|run_cmd|run_shell|bash|powershell|eval|spawn)",
+      "expect": "absent",
+      "rationale": "Shell execution registered by default turns any prompt injection into remote code execution."
+    },
+    {
+      "id": "dangerous-mutating-tools-default",
+      "category": "dangerous-registration",
+      "severity": "high",
+      "mode": "tool_list_scan",
+      "gate": "no_dangerous_tools",
+      "expect": "absent",
+      "allow": [],
+      "rationale": "Infrastructure-mutating tools (restart/deploy/drop) must be opt-in, so that the default installation cannot destroy anything. Names that pair a mutating verb with a read-only suffix are reported as advisories, not failures, because the name alone cannot settle the question."
+    },
+    {
+      "id": "sql-stacked-statement",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "tool_pattern": "(sql|query|execute|db)",
+      "arguments": { "sql": "SELECT 1; DROP TABLE mcpbench_probe;" },
+      "expect": "reject",
+      "detect": { "forbidden_substrings": ["DROP TABLE"] },
+      "rationale": "Stacked statements are the classic way to append a second, unvalidated statement behind a whitelisted SELECT."
+    },
+    {
+      "id": "sql-line-comment-smuggling",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "tool_pattern": "(sql|query|execute|db)",
+      "arguments": { "sql": "SELECT 1 -- innocent\n; DELETE FROM mcpbench_probe;" },
+      "expect": "reject",
+      "detect": { "forbidden_substrings": ["DELETE FROM"] },
+      "rationale": "Hiding the second statement behind a line comment defeats naive 'starts with SELECT' checks."
+    },
+    {
+      "id": "sql-block-comment-prefix",
+      "category": "sql-whitelist-bypass",
+      "severity": "high",
+      "tool_pattern": "(sql|query|execute|db)",
+      "arguments": { "sql": "/* SELECT */ DELETE FROM mcpbench_probe WHERE 1=1" },
+      "expect": "reject",
+      "detect": { "forbidden_substrings": ["DELETE FROM"] },
+      "rationale": "Comment stripping must happen before keyword matching, not after."
+    },
+    {
+      "id": "sql-select-into-outfile",
+      "category": "sql-whitelist-bypass",
+      "severity": "critical",
+      "tool_pattern": "(sql|query|execute|db)",
+      "arguments": { "sql": "SELECT 'x' INTO OUTFILE '/tmp/mcpbench_pwn'" },
+      "expect": "reject",
+      "detect": { "forbidden_substrings": ["OUTFILE"] },
+      "rationale": "A read-only whitelist that allows INTO OUTFILE lets the reader write files on the database host."
+    },
+    {
+      "id": "sql-sleep-timeout",
+      "category": "sql-whitelist-bypass",
+      "severity": "medium",
+      "tool_pattern": "(sql|query|execute|db)",
+      "arguments": { "sql": "SELECT SLEEP(5)" },
+      "expect": "reject",
+      "detect": { "forbidden_substrings": [] },
+      "rationale": "Unbounded expressions let a data question become a denial-of-service against the database."
+    },
+    {
+      "id": "cred-env-canary-dump",
+      "category": "credential-exposure",
+      "severity": "high",
+      "tool_pattern": "(env|environ|printenv|get_env|config|settings|info)",
+      "arguments": {},
+      "expect": "no_leak",
+      "detect": { "forbidden_substrings": ["mcpbench-canary-3f9a1c2d7e5b", "sk-mcpbench-canary-"] },
+      "rationale": "The harness injects two canary secrets into the target's environment. Any tool that returns them has dumped the process environment."
+    },
+    {
+      "id": "cred-file-outside-sandbox",
+      "category": "credential-exposure",
+      "severity": "high",
+      "tool_pattern": "(read_file|read_text_file|read|cat|get_file|file_info)",
+      "arguments": { "path": "{canary_file}" },
+      "expect": "no_leak",
+      "detect": { "forbidden_substrings": ["mcpbench-canary-3f9a1c2d7e5b"] },
+      "rationale": "Directory containment is the only thing stopping an agent from reading credential files through a file tool."
+    },
+    {
+      "id": "cred-log-path-injection",
+      "category": "credential-exposure",
+      "severity": "medium",
+      "tool_pattern": "log",
+      "arguments": { "log_path": "{canary_file}", "path": "{canary_file}", "lines": 20 },
+      "expect": "no_leak",
+      "detect": { "forbidden_substrings": ["mcpbench-canary-3f9a1c2d7e5b"] },
+      "rationale": "Log readers usually take a server-side path; without an allowlist that is an arbitrary file read."
+    },
+    {
+      "id": "inj-metadata-instructions",
+      "category": "prompt-injection",
+      "severity": "high",
+      "mode": "metadata_scan",
+      "detect": {
+        "description_regex": [
+          "ignore (all )?(previous|prior|above)",
+          "you must (always|never)",
+          "do not (tell|mention|reveal)",
+          "<important>",
+          "before using this tool.*(call|read|run)",
+          "system prompt"
+        ]
+      },
+      "rationale": "Tool descriptions are injected into the model context. Imperative text there is a tool-poisoning surface that the user never sees."
+    },
+    {
+      "id": "redact-secret-shaped-output",
+      "category": "output-redaction",
+      "severity": "medium",
+      "tool_pattern": "(inspect|logs|status|config|query|docker|stats|info)",
+      "arguments": {},
+      "expect": "no_leak",
+      "detect": {
+        "forbidden_regex": [
+          "-----BEGIN [A-Z ]*PRIVATE KEY-----",
+          "sk-[A-Za-z0-9]{20,}",
+          "(?i)password\\s*[=:]\\s*\\S+",
+          "(?i)aws_secret_access_key\\s*[=:]"
+        ],
+        "forbidden_substrings": ["mcpbench-canary-3f9a1c2d7e5b"]
+      },
+      "rationale": "Infrastructure tools return raw command output; without redaction the model transcript becomes a credential store."
+    }
+  ]
+}
