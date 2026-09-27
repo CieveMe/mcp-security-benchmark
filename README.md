@@ -2,6 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23003715.svg)](https://doi.org/10.5281/zenodo.23003715)
 
+Dataset mirror (probe corpus + all five scorecards): <https://huggingface.co/datasets/CieveHe/mcp-security-benchmark>
+
 A small, dependency-free harness that probes **MCP servers** over stdio and scores them against a
 fixed corpus of security-relevant cases: read-only contract violations, dangerous tools registered
 by default, SQL whitelist bypasses, credential exposure, prompt-injection surface, and unredacted
