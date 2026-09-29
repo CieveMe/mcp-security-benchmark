@@ -93,3 +93,50 @@ table.
   in this repository.
 - Re-run `python -m bench run --target everything-public` once a new version is published, and record
   the result in the repository rather than in a chat log.
+
+## Outcome (verified 2026-09-29 against the GitHub API)
+
+The draft was posted, and it has been corroborated by third parties and picked up by a patch. Every
+line below was re-read from the API on 2026-09-29 rather than transcribed from a chat report.
+
+| item | fact |
+|---|---|
+| our report | [issue #4882](https://github.com/modelcontextprotocol/servers/issues/4882), opened 2026-09-27 22:15:37Z, **still open** |
+| external comment 1 | @sattyamjjain, 2026-09-28 16:57Z |
+| external comment 2 | @shleder, 2026-09-28 18:38Z |
+| patch | [PR #4889](https://github.com/modelcontextprotocol/servers/pull/4889), opened 2026-09-28 19:53:47Z, `Resolves #4882`, **open and not merged** |
+| earlier report of the same weakness | [issue #3986](https://github.com/modelcontextprotocol/servers/issues/3986), opened 2026-04-19 by another user, still open |
+
+**What the comments added, in their own terms.**
+
+* @sattyamjjain: the issue duplicates #3986 and three PRs are already open for it (#4001 and #4164
+  restrict the output to a single key, #4009 adds a documentation warning), asking a maintainer to pick
+  one. Independently of the duplicate question, that comment adds an angle this draft did **not** have:
+  *"`get-env` is annotated with `readOnlyHint: true, destructiveHint: false`. Hosts that auto-approve
+  read-only tools will run the full env dump without asking."* — and suggests registering the tool only
+  behind an explicit opt-in, because the reference server is copied as a starting template.
+* @shleder: confirms the severity and names the mechanism — environment variables routinely hold
+  `GITHUB_TOKEN`, `AWS_SECRET_ACCESS_KEY`, API keys and connection strings, so a prompt-injected or
+  unprompted agent call can exfiltrate credentials — and proposes exactly the two remediations that were
+  in the draft's third bullet: strict allowlisting, and redaction by name pattern (`KEY`, `TOKEN`,
+  `SECRET`, `PASSWORD`, `AUTH`). The comment discloses that its author maintains a sandbox layer product.
+
+**What the patch does**, per its own description: `isSensitiveEnvVar` + `getRedactedEnv` in
+`src/everything/tools/get-env.ts`, redacting to `[REDACTED]` on substring and prefix rules, plus expanded
+unit tests; 2 files changed, +209/−14. It discloses AI assistance under human review.
+
+**What is still true, checked rather than assumed:** upstream `main`'s
+`src/everything/tools/get-env.ts` still returns `JSON.stringify(process.env, null, 2)` and still declares
+`readOnlyHint: true`. So as of 2026-09-29 the exposure is unchanged in the code, the issue is open, and the
+patch is open.
+
+**How to describe this chain, in one honest paragraph.** The benchmark ran a fixed probe corpus against
+five servers and flagged `get-env` on the Everything reference server as its highest-severity result; the
+report was filed upstream as #4882 with a reproducible transcript, was independently corroborated by two
+outside commenters — one adding the auto-approval (`readOnlyHint`) angle, the other specifying
+allowlist/redaction — and a third-party patch (#4889) now resolves it, unmerged. It is **not** the first
+report of this weakness (#3986 predates it by five months), and it is **not** fixed yet. What it is: an
+independent reproduction with a harness that upstream contributors engaged with by name.
+
+**Next, when a fixed version ships:** re-run `python -m bench run --target everything-public` and record
+the before/after scorecards in this repository, and update this section rather than a chat log.
